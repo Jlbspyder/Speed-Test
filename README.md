@@ -29,7 +29,7 @@ Tests your typing speed and accuracy. Users are able to:
 
 ### Links
 
-- Live Site URL: [Add live site URL here](https://your-live-site-url.com)
+- Live Site URL: [Speed Test](https://jlb-typing.netlify.app/)
 
 ### Built with
 
