@@ -201,33 +201,7 @@ export function useTypingTest(data) {
   };
 
   const onKeyDown = (e) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-    // // start on first typing if idle
-    // if (status === "idle" && (e.key.length === 1 || e.key === "Backspace")) {
-    //   start();
-    // }
-    // if (status !== "running") return;
-
-    // if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-    // if (e.key === "Backspace") {
-    //   e.preventDefault();
-    //   setTotalKeys((k) => k + 1);
-    //   setTyped((t) => (t.length ? t.slice(0, -1) : t));
-    //   // do NOT decrement errors (original errors still count)
-    //   return;
-    // }
-
-    // if (e.key.length !== 1) return;
-
-    // setTotalKeys((k) => k + 1);
-    // setTyped((t) => {
-    //   if (t.length >= passage.length) return t;
-    //   const i = t.length;
-    //   const ch = e.key;
-    //   if (ch !== passage[i]) setErrorKeys((err) => err + 1);
-    //   return t + ch;
-    // });
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
   };
 
   // Baseline / high score + persist best on finish

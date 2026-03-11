@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 const NotePad = ({ typing }) => {
-  const { passage, typed, status, onChange, setStartMs, setStatus, setElapsed, setErrorKeys, setTotalKeys, start, restart, onKeyDown, inputRef } =
+  const { passage, typed, status, onChange, start, restart, onKeyDown, inputRef } =
     typing;
 
   // Passage render
