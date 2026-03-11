@@ -71,7 +71,6 @@ const NotePad = ({ typing }) => {
               <div className="text-[20px] sm:text-[12px] text-(--white)">
                 Or click the text and start typing
               </div>
-              //{" "}
             </div>
           )}
 
@@ -95,7 +94,7 @@ const NotePad = ({ typing }) => {
         <div className="mt-4 flex items-center justify-center gap-3">
           <button
             onClick={restart}
-            className="px-3 py-2 cursor-pointer flex items-center md:text-[10px] rounded text-(--white) bg-(--off-black) hover:bg-(--light-gray) transition"
+            className="px-3 py-2 cursor-pointer flex items-center sm:text-[12px] rounded text-(--white) bg-(--off-black) hover:bg-(--light-gray) transition"
           >
             Restart Test
             <img

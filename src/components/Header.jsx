@@ -21,15 +21,15 @@ const Header = ({
   return (
     <div>
       <header className="bg-(--black) pb-2">
-        <div className="text-(--white) md:flex md:items-center md:justify-between md:w-full">
+        <div className="text-(--white) lg:flex lg:items-center lg:justify-between lg:w-full">
           {/* Live stats */}
-          <div className="flex items-center justify-around md:w-[40%] pt-4 md:pt-0">
-            <div className="flex flex-col md:flex-row items-center ml-4 md:ml-1 justify-left md:gap-2 border-r border-r-(--light-gray) md:w-[60%] w-full">
+          <div className="flex items-center justify-around lg:w-[40%] pt-4 md:pt-0">
+            <div className="flex flex-col lg:flex-row items-center ml-4 lg:ml-1 justify-left md:gap-2 border-r border-r-(--light-gray) md:w-[60%] w-full">
               <div className="text-(--light-gray) md:text-[12px]">WPM:</div>
               <div className="text-(--white) text-2xl font-semibold">{wpm}</div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-center md:gap-2 border-r border-r-(--light-gray) w-full">
+            <div className="flex flex-col lg:flex-row items-center justify-center lg:gap-2 border-r border-r-(--light-gray) w-full">
               <div className="text-(--light-gray) md:text-[12px]">
                 Accuracy:
               </div>
@@ -40,7 +40,7 @@ const Header = ({
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center pl-6 sm:pl-0 justify-center md:gap-2 w-full">
+            <div className="flex flex-col lg:flex-row items-center pl-6 sm:pl-0 justify-center lg:gap-2 w-full">
               <div className="text-(--light-gray) md:text-[12px]">Time:</div>
               <div
                 className={`text-2xl font-semibold ${status === "idle" ? "text-(--white)" : "text-(--yellow)"}`}
@@ -51,7 +51,7 @@ const Header = ({
           </div>
 
           {/* Mobile dropdown controls */}
-          <div className="md:hidden flex items-center justify-center my-4 gap-2">
+          <div className="lg:hidden flex items-center justify-center my-4 gap-2">
             {/* Difficulty dropdown */}
             <div className="relative w-[40%]">
               <button
@@ -162,41 +162,40 @@ const Header = ({
           </div>
 
           {/* Desktop button controls */}
-          <div className="hidden md:flex items-center w-[43%] gap-11">
-            <div className="flex items-center gap-1">
-              <p className="text-(--dark-gray) text-[12px]">Difficulty:</p>
-              {levelOptions.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => setLevelSelected(option)}
-                  className={`px-3 rounded-md border ${
-                    levelSelected === option
-                      ? "border-(--light-blue) text-(--light-blue)"
-                      : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
-                  } cursor-pointer`}
-                >
-                  <span className="text-[12px]">{option}</span>
-                </button>
-              ))}
+            <div className="hidden lg:flex items-center gap-5">
+              <div className="flex items-center gap-1">
+                <p className="text-(--dark-gray) text-[12px]">Difficulty:</p>
+                {levelOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => setLevelSelected(option)}
+                    className={`px-3 rounded-md border ${
+                      levelSelected === option
+                        ? "border-(--light-blue) text-(--light-blue)"
+                        : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
+                    } cursor-pointer`}
+                  >
+                    <span className="text-[12px]">{option}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1 ">
+                <p className="text-(--dark-gray) text-[12px]">Mode:</p>
+                {timeOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => setTimeSelected(option)}
+                    className={`px-3 rounded-md border ${
+                      timeSelected === option
+                        ? "border-(--light-blue) text-(--light-blue)"
+                        : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
+                    } cursor-pointer`}
+                  >
+                    <span className="text-[12px]">{option}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-
-            <div className="flex items-center gap-1">
-              <p className="text-(--dark-gray) text-[12px]">Mode:</p>
-              {timeOptions.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => setTimeSelected(option)}
-                  className={`px-3 rounded-md border ${
-                    timeSelected === option
-                      ? "border-(--light-blue) text-(--light-blue)"
-                      : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
-                  } cursor-pointer`}
-                >
-                  <span className="text-[12px]">{option}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </header>
     </div>
