@@ -38,7 +38,7 @@ const NotePad = ({ typing }) => {
       <div className={`mt-6 relative ${status !== "idle" ? "border-b-(--dark-gray) border" : ""}`}>
         {/* Typing area */}
         <div
-          className="relative pb-4 rounded cursor-text"
+          className="relative bg-(--black) pb-4 px-1 rounded cursor-text"
           onClick={() => {
             inputRef.current?.focus();
             if (status === "idle") start();
@@ -47,7 +47,7 @@ const NotePad = ({ typing }) => {
           {/* blurred passage when idle */}
           <div
             className={[
-              "leading-7 text-lg whitespace-pre-wrap wrap-break-words break-all transition duration-200",
+              "leading-7 text-lg sm:text-xl whitespace-pre-wrap wrap-break-words break-all transition duration-200",
               status === "idle"
                 ? "blur-md brightness-95 select-none"
                 : "blur-0 brightness-100",

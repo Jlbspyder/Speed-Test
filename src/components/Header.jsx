@@ -102,7 +102,7 @@ const Header = ({
               <img
                 src="/images/icon-down-arrow.svg"
                 alt="dropdown arrow"
-                className="pointer-events-none absolute right-8 sm:right-20 top-1/2 -translate-y-1/2"
+                className="pointer-events-none absolute right-5 sm:right-20 top-1/2 -translate-y-1/2"
               />
             </div>
 
