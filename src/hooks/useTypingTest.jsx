@@ -17,14 +17,16 @@ const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 export function useTypingTest(data) {
   const [difficulty, setDifficulty] = useState(() => {
-  const saved = localStorage.getItem(DIFF_KEY);
-  return saved === "easy" || saved === "medium" || saved === "hard" ? saved : "easy";
-});
+    const saved = localStorage.getItem(DIFF_KEY);
+    return saved === "easy" || saved === "medium" || saved === "hard"
+      ? saved
+      : "easy";
+  });
 
-const [mode, setMode] = useState(() => {
-  const saved = localStorage.getItem(MODE_KEY);
-  return saved === "timed" || saved === "passage" ? saved : "timed";
-});
+  const [mode, setMode] = useState(() => {
+    const saved = localStorage.getItem(MODE_KEY);
+    return saved === "timed" || saved === "passage" ? saved : "timed";
+  });
 
   const [resultType, setResultType] = useState(null); // "baseline" | "highscore" | null
   const [hasPlayed, setHasPlayed] = useState(() => {
@@ -47,11 +49,10 @@ const [mode, setMode] = useState(() => {
   });
 
   const [bestAccuracy, setBestAccuracy] = useState(() => {
-  const raw = localStorage.getItem(BEST_ACCURACY_KEY);
-  const n = raw ? Number(raw) : null;
-  return Number.isFinite(n) ? n : null;
-});
-
+    const raw = localStorage.getItem(BEST_ACCURACY_KEY);
+    const n = raw ? Number(raw) : null;
+    return Number.isFinite(n) ? n : null;
+  });
 
   // messages / celebration flags
   const [showBaseline, setShowBaseline] = useState(false);
@@ -145,6 +146,40 @@ const [mode, setMode] = useState(() => {
     return Math.round(clamp(acc, 0, 1) * 100);
   }, [totalKeys, errorKeys]);
 
+  const onChange = (e) => {
+    const nextValue = e.target.value;
+
+    // don't allow typing past passage length
+    const limitedValue = nextValue.slice(0, passage.length);
+
+    // start if idle and user begins typing
+    if (status === "idle" && limitedValue.length > 0) {
+      setStatus("running");
+      setStartMs(Date.now());
+      setElapsed(0);
+    }
+
+    // count total keys by change in length
+    const prev = typed;
+    const lengthDiff = limitedValue.length - prev.length;
+
+    if (lengthDiff > 0) {
+      setTotalKeys((k) => k + lengthDiff);
+
+      for (let i = prev.length; i < limitedValue.length; i++) {
+        if (limitedValue[i] !== passage[i]) {
+          setErrorKeys((err) => err + 1);
+        }
+      }
+    } else if (lengthDiff < 0) {
+      // backspace / deletion
+      setTotalKeys((k) => k + Math.abs(lengthDiff));
+      // keep original errors counted
+    }
+
+    setTyped(limitedValue);
+  };
+
   // timed: countdown; passage: counts up (no limit)
   const timeLeft =
     mode === "timed" ? clamp(TIME_LIMIT - elapsed, 0, TIME_LIMIT) : null;
@@ -166,32 +201,33 @@ const [mode, setMode] = useState(() => {
   };
 
   const onKeyDown = (e) => {
-    // start on first typing if idle
-    if (status === "idle" && (e.key.length === 1 || e.key === "Backspace")) {
-      start();
-    }
-    if (status !== "running") return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+    // // start on first typing if idle
+    // if (status === "idle" && (e.key.length === 1 || e.key === "Backspace")) {
+    //   start();
+    // }
+    // if (status !== "running") return;
 
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    // if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-    if (e.key === "Backspace") {
-      e.preventDefault();
-      setTotalKeys((k) => k + 1);
-      setTyped((t) => (t.length ? t.slice(0, -1) : t));
-      // do NOT decrement errors (original errors still count)
-      return;
-    }
+    // if (e.key === "Backspace") {
+    //   e.preventDefault();
+    //   setTotalKeys((k) => k + 1);
+    //   setTyped((t) => (t.length ? t.slice(0, -1) : t));
+    //   // do NOT decrement errors (original errors still count)
+    //   return;
+    // }
 
-    if (e.key.length !== 1) return;
+    // if (e.key.length !== 1) return;
 
-    setTotalKeys((k) => k + 1);
-    setTyped((t) => {
-      if (t.length >= passage.length) return t;
-      const i = t.length;
-      const ch = e.key;
-      if (ch !== passage[i]) setErrorKeys((err) => err + 1);
-      return t + ch;
-    });
+    // setTotalKeys((k) => k + 1);
+    // setTyped((t) => {
+    //   if (t.length >= passage.length) return t;
+    //   const i = t.length;
+    //   const ch = e.key;
+    //   if (ch !== passage[i]) setErrorKeys((err) => err + 1);
+    //   return t + ch;
+    // });
   };
 
   // Baseline / high score + persist best on finish
@@ -214,7 +250,6 @@ const [mode, setMode] = useState(() => {
       setResultType("complete"); // 👈 first screen
       return;
     }
-    
 
     // SECOND TEST (baseline moment)
     if (hasPlayed && prevBest != null && resultType == null) {
@@ -276,5 +311,6 @@ const [mode, setMode] = useState(() => {
     restart,
     onKeyDown,
     inputRef,
+    onChange,
   };
 }

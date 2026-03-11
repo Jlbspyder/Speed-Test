@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 const NotePad = ({ typing }) => {
-  const { passage, typed, status, start, restart, onKeyDown, inputRef } =
+  const { passage, typed, status, onChange, setStartMs, setStatus, setElapsed, setErrorKeys, setTotalKeys, start, restart, onKeyDown, inputRef } =
     typing;
 
   // Passage render
@@ -30,6 +30,8 @@ const NotePad = ({ typing }) => {
       );
     });
   }, [passage, typed, status]);
+
+  
 
   return (
     <>
@@ -77,8 +79,12 @@ const NotePad = ({ typing }) => {
           <input
             ref={inputRef}
             onKeyDown={onKeyDown}
-            value=""
-            onChange={() => {}}
+            value={typed}
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
+            onChange={onChange}
             className="absolute opacity-0 pointer-events-none"
             aria-label="Typing input"
           />
