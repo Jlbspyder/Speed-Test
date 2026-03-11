@@ -60,8 +60,7 @@ export function useTypingTest(data) {
 
   const inputRef = useRef(null);
 
-  const reset = (newDifficulty = difficulty) => {
-    setPassage(pickRandom(data, newDifficulty));
+  const clearRunState = () => {
     setStatus("idle");
     setStartMs(null);
     setElapsed(0);
@@ -71,6 +70,25 @@ export function useTypingTest(data) {
     setShowBaseline(false);
     setShowHighScore(false);
     setResultType(null);
+  };
+
+  const restart = () => {
+    clearRunState();
+    if (status === "finished") {
+      reset(difficulty); // picks new random passage
+    }
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      setStatus("running");
+      setStartMs(Date.now());
+      setElapsed(0);
+    });
+  };
+
+  const reset = (newDifficulty = difficulty) => {
+    setPassage(pickRandom(data, newDifficulty));
+    clearRunState();
+    requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   // Persist difficulty and mode
@@ -84,16 +102,21 @@ export function useTypingTest(data) {
 
   // Difficulty change: refresh passage if not running
   useEffect(() => {
-    if (status === "running" && status !== "running") return;
-      reset(difficulty);
+    if (status === "running");
+    reset(difficulty);
+     requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      setStartMs(Date.now());
+      setElapsed(0);
+    });
   }, [difficulty]);
 
   // Mode change: refresh passage if not running
   useEffect(() => {
     if (status === "running") return;
     reset(difficulty);
+    // restart();
   }, [mode]);
-
 
   // Timer
   useEffect(() => {
@@ -196,11 +219,6 @@ export function useTypingTest(data) {
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
-  const restart = () => {
-    reset(difficulty); // picks new random passage
-    requestAnimationFrame(() => inputRef.current?.focus());
-  };
-
   const onKeyDown = (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
   };
@@ -227,7 +245,12 @@ export function useTypingTest(data) {
     }
 
     // SECOND TEST (beat baseline moment)
-    if (hasPlayed && prevBest != null && resultType != null && accuracy != null) {
+    if (
+      hasPlayed &&
+      prevBest != null &&
+      resultType != null &&
+      accuracy != null
+    ) {
       if (wpm > prevBest) {
         setResultType("highscore");
         localStorage.setItem(BEST_KEY, String(wpm));
