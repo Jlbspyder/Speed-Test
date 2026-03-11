@@ -13,7 +13,7 @@ const pickRandom = (data, difficulty) => {
   return arr[Math.floor(Math.random() * arr.length)]?.text ?? "";
 };
 
-const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const clamp = (num, min, max) => Math.max(min, Math.min(max, num));
 
 export function useTypingTest(data) {
   const [difficulty, setDifficulty] = useState(() => {
@@ -61,7 +61,6 @@ export function useTypingTest(data) {
   const inputRef = useRef(null);
 
   const clearRunState = () => {
-    setStatus("idle");
     setStartMs(null);
     setElapsed(0);
     setTyped("");
