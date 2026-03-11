@@ -35,10 +35,10 @@ const NotePad = ({ typing }) => {
 
   return (
     <>
-      <div className={`mt-6 relative ${status !== "idle" ? "border-b-(--off-black) border" : ""}`}>
+      <div className={`mt-6 relative ${status !== "idle" ? "border-b-(--dark-gray) border" : ""}`}>
         {/* Typing area */}
         <div
-          className="relative border p-4 rounded cursor-text"
+          className="relative py-4 rounded cursor-text"
           onClick={() => {
             inputRef.current?.focus();
             if (status === "idle") start();
