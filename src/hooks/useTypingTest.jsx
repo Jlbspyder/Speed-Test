@@ -43,15 +43,15 @@ export function useTypingTest(data) {
   const [errorKeys, setErrorKeys] = useState(0);
 
   const [best, setBest] = useState(() => {
-    const raw = localStorage.getItem(BEST_KEY);
-    const n = raw ? Number(raw) : null;
-    return Number.isFinite(n) ? n : null;
+    const score = localStorage.getItem(BEST_KEY);
+    const num = score ? Number(score) : null;
+    return Number.isFinite(num) ? num : null;
   });
 
   const [bestAccuracy, setBestAccuracy] = useState(() => {
-    const raw = localStorage.getItem(BEST_ACCURACY_KEY);
-    const n = raw ? Number(raw) : null;
-    return Number.isFinite(n) ? n : null;
+    const accuracyPoint = localStorage.getItem(BEST_ACCURACY_KEY);
+    const num = accuracyPoint ? Number(accuracyPoint) : null;
+    return Number.isFinite(num) ? num : null;
   });
 
   // messages / celebration flags
@@ -84,8 +84,8 @@ export function useTypingTest(data) {
 
   // Difficulty change: refresh passage if not running
   useEffect(() => {
-    if (status === "running") return;
-    reset(difficulty);
+    if (status === "running" && status !== "running") return;
+      reset(difficulty);
   }, [difficulty]);
 
   // Mode change: refresh passage if not running
@@ -93,6 +93,7 @@ export function useTypingTest(data) {
     if (status === "running") return;
     reset(difficulty);
   }, [mode]);
+
 
   // Timer
   useEffect(() => {
@@ -210,7 +211,7 @@ export function useTypingTest(data) {
 
     const prevBest = best;
 
-    // FIRST EVER TEST
+    // FIRST EVER TEST (baseline moment)
     if (!hasPlayed) {
       localStorage.setItem(HAS_PLAYED_KEY, "true");
       setHasPlayed(true);
@@ -221,12 +222,12 @@ export function useTypingTest(data) {
       localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
       setBestAccuracy(accuracy);
 
-      setResultType("complete"); // 👈 first screen
+      setResultType("baseline"); // first screen
       return;
     }
 
-    // SECOND TEST (baseline moment)
-    if (hasPlayed && prevBest != null && resultType == null) {
+    // SECOND TEST (beat baseline moment)
+    if (hasPlayed && prevBest != null && resultType != null && accuracy != null) {
       if (wpm > prevBest) {
         setResultType("highscore");
         localStorage.setItem(BEST_KEY, String(wpm));
@@ -239,17 +240,24 @@ export function useTypingTest(data) {
         return;
       }
 
-      setResultType("baseline");
+      setResultType("highscore"); // second screen (beat baseline)
       return;
     }
 
     // Later tests
+    if (wpm <= prevBest) {
+      setResultType("complete");
+      localStorage.setItem(BEST_KEY, String(wpm));
+      setBest(prevBest);
+    }
     if (wpm > prevBest) {
       setResultType("highscore");
       localStorage.setItem(BEST_KEY, String(wpm));
       setBest(wpm);
-    } else {
-      setResultType("complete");
+    }
+    if (accuracy > bestAccuracy) {
+      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
+      setBestAccuracy(accuracy);
     }
   }, [status]);
 
