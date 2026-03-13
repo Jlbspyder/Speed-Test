@@ -34,8 +34,16 @@ function App() {
   useEffect(() => typing.setMode(timeToMode(timeSelected)), [timeSelected]);
 
   const timeDisplay =
-    typing.mode === "timed"
+    typing.mode === "timed" && typing.difficulty === "easy"
       ? formatTime(typing.timeLeft ?? 0)
+      : formatTime(typing.elapsed);
+  const timeDisplayMedium =
+    typing.mode === "timed" && typing.difficulty === "medium"
+      ? formatTime(typing.timeLeftMedium ?? 0)
+      : formatTime(typing.elapsed);
+  const timeDisplayHard =
+    typing.mode === "timed" && typing.difficulty === "hard"
+      ? formatTime(typing.timeLeftHard ?? 0)
       : formatTime(typing.elapsed);
 
   return (
@@ -50,6 +58,8 @@ function App() {
           wpm={typing.wpm}
           accuracy={typing.accuracy}
           timeDisplay={timeDisplay}
+          timeDisplayMedium={timeDisplayMedium}
+          timeDisplayHard={timeDisplayHard}
           personalBest={typing.best}
           typing={typing}
         />

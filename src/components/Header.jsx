@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 const Header = ({
   levelSelected,
@@ -9,9 +9,11 @@ const Header = ({
   accuracy,
   typing,
   timeDisplay,
+  timeDisplayMedium,
+  timeDisplayHard,
 }) => {
   const levelOptions = ["Easy", "Medium", "Hard"];
-  const timeOptions = ["Timed (60s)", "Passage"];
+  const timeOptions = ["Timed", "Passage"];
 
   const [openLevel, setOpenLevel] = useState(false);
   const [openTime, setOpenTime] = useState(false);
@@ -45,7 +47,9 @@ const Header = ({
               <div
                 className={`text-2xl font-semibold ${status === "idle" ? "text-(--white)" : "text-(--yellow)"}`}
               >
-                {timeDisplay}
+                {typing.difficulty === "easy" && timeDisplay}
+                {typing.difficulty === "medium" && timeDisplayMedium}
+                {typing.difficulty === "hard" && timeDisplayHard}
               </div>
             </div>
           </div>
@@ -113,7 +117,9 @@ const Header = ({
                 onClick={() => setOpenTime((prev) => !prev)}
                 className="w-full py-1 border border-(--light-gray) cursor-pointer rounded-lg text-center"
               >
-                {timeSelected || "Timed (60s)"}
+                {typing.difficulty === "easy" && "Timed (60s)"}
+                {typing.difficulty === "medium" && "Timed (90s)"}
+                {typing.difficulty === "hard" && "Timed (120s)"}
               </button>
 
               {openTime && (
@@ -162,40 +168,40 @@ const Header = ({
           </div>
 
           {/* Desktop button controls */}
-            <div className="hidden lg:flex items-center gap-5">
-              <div className="flex items-center gap-1">
-                <p className="text-(--dark-gray) text-[12px]">Difficulty:</p>
-                {levelOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setLevelSelected(option)}
-                    className={`px-3 rounded-md border ${
-                      levelSelected === option
-                        ? "border-(--light-blue) text-(--light-blue)"
-                        : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
-                    } cursor-pointer`}
-                  >
-                    <span className="text-[12px]">{option}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-1 ">
-                <p className="text-(--dark-gray) text-[12px]">Mode:</p>
-                {timeOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setTimeSelected(option)}
-                    className={`px-3 rounded-md border ${
-                      timeSelected === option
-                        ? "border-(--light-blue) text-(--light-blue)"
-                        : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
-                    } cursor-pointer`}
-                  >
-                    <span className="text-[12px]">{option}</span>
-                  </button>
-                ))}
-              </div>
+          <div className="hidden lg:flex items-center gap-5">
+            <div className="flex items-center gap-1">
+              <p className="text-(--dark-gray) text-[12px]">Difficulty:</p>
+              {levelOptions.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setLevelSelected(option)}
+                  className={`px-3 rounded-md border ${
+                    levelSelected === option
+                      ? "border-(--light-blue) text-(--light-blue)"
+                      : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
+                  } cursor-pointer`}
+                >
+                  <span className="text-[12px]">{option}</span>
+                </button>
+              ))}
             </div>
+            <div className="flex items-center gap-1 ">
+              <p className="text-(--dark-gray) text-[12px]">Mode:</p>
+              {timeOptions.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setTimeSelected(option)}
+                  className={`px-3 rounded-md border ${
+                    timeSelected === option
+                      ? "border-(--light-blue) text-(--light-blue)"
+                      : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
+                  } cursor-pointer`}
+                >
+                  <span className="text-[12px]">{option}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
     </div>

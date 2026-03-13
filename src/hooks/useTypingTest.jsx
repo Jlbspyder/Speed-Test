@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const TIME_LIMIT = 60;
+const MEDIUM_TIME_LIMIT = 90;
+const HARD_TIME_LIMIT = 120;
 const BEST_KEY = "personal_best";
 const HAS_PLAYED_KEY = "typing_has_played_v1";
 const MODE_KEY = "typing_mode_v1";
@@ -101,9 +103,8 @@ export function useTypingTest(data) {
 
   // Difficulty change: refresh passage if not running
   useEffect(() => {
-    if (status === "running");
     reset(difficulty);
-     requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
       inputRef.current?.focus();
       setStartMs(Date.now());
       setElapsed(0);
@@ -114,7 +115,6 @@ export function useTypingTest(data) {
   useEffect(() => {
     if (status === "running") return;
     reset(difficulty);
-    // restart();
   }, [mode]);
 
   // Timer
@@ -125,8 +125,20 @@ export function useTypingTest(data) {
       const sec = Math.floor((Date.now() - startMs) / 1000);
       setElapsed(sec);
 
-      if (mode === "timed" && sec >= TIME_LIMIT) {
+      if (mode === "timed" && difficulty === "easy" && sec >= TIME_LIMIT) {
         setElapsed(TIME_LIMIT);
+        setStatus("finished");
+      }
+      if (
+        mode === "timed" &&
+        difficulty === "medium" &&
+        sec >= MEDIUM_TIME_LIMIT
+      ) {
+        setElapsed(MEDIUM_TIME_LIMIT);
+        setStatus("finished");
+      }
+      if (mode === "timed" && difficulty === "hard" && sec >= HARD_TIME_LIMIT) {
+        setElapsed(HARD_TIME_LIMIT);
         setStatus("finished");
       }
     }, 200);
@@ -205,7 +217,17 @@ export function useTypingTest(data) {
 
   // timed: countdown; passage: counts up (no limit)
   const timeLeft =
-    mode === "timed" ? clamp(TIME_LIMIT - elapsed, 0, TIME_LIMIT) : null;
+    mode === "timed" && difficulty === "easy"
+      ? clamp(TIME_LIMIT - elapsed, 0, TIME_LIMIT)
+      : null;
+  const timeLeftMedium =
+    mode === "timed" && difficulty === "medium"
+      ? clamp(MEDIUM_TIME_LIMIT - elapsed, 0, MEDIUM_TIME_LIMIT)
+      : null;
+  const timeLeftHard =
+    mode === "timed" && difficulty === "hard"
+      ? clamp(HARD_TIME_LIMIT - elapsed, 0, HARD_TIME_LIMIT)
+      : null;
 
   const start = () => {
     if (!passage) return;
@@ -295,6 +317,8 @@ export function useTypingTest(data) {
     status,
     elapsed,
     timeLeft,
+    timeLeftMedium,
+    timeLeftHard,
     typed,
 
     // stats
