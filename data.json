@@ -39,6 +39,10 @@
     {
       "id": "easy-10",
       "text": "The music played softly in the room. She closed her eyes and let the sounds wash over her. It was a simple song but it made her feel at peace."
+    },
+    {
+      "id": "easy-11",
+      "text": "Sometimes you just feel tired and weak, and when you feel weak, you feel like you wanna just give up, but you got to search within you to try to find that inner strength to not give up!"
     }
   ],
   "medium": [
@@ -81,6 +85,10 @@
     {
       "id": "medium-10",
       "text": "Night markets come alive after sunset in cities across Asia. Vendors set up stalls selling everything from grilled skewers to handmade crafts. The air fills with enticing aromas and the buzz of conversation. Locals and tourists alike wander through, sampling street food and hunting for bargains."
+    },
+    {
+      "id": "medium-11",
+      "text": "How do you like to go up in a swing, up in the air so blue? Oh, I do think it the pleasantest thing ever a child can do! Up in the air and over the wall, till I can see so wide, river and trees and cattle and all over the countryside— till I look down on the garden green, down on the roof so brown— up in the air I go flying again, up in the air and down!"
     }
   ],
   "hard": [
@@ -123,6 +131,10 @@
     {
       "id": "hard-10",
       "text": "The archaeological expedition unearthed artifacts that complicated prevailing theories about Bronze Age trade networks. Obsidian from Anatolia, lapis lazuli from Afghanistan, and amber from the Baltic—all discovered in a single Mycenaean tomb—suggested commercial connections far more extensive than previously hypothesized. \"We've underestimated ancient peoples' navigational capabilities and their appetite for luxury goods,\" the lead researcher observed. \"Globalization isn't as modern as we assume.\""
+    },
+    {
+      "id": "hard-11",
+      "text": "I wandered lonely as a cloud that floats on high o'er vales and hills, when all at once I saw a crowd, a host, of golden daffodils; beside the lake, beneath the trees, fluttering and dancing in the breeze. Continuous as the stars that shine and twinkle on the milky way, they stretched in never-ending line along the margin of a bay: ten thousand saw I at a glance, tossing their heads in sprightly dance. The waves beside them danced; but they out-did the sparkling waves in glee: a poet could not but be gay, in such a jocund company: I gazed — and gazed — but little thought what wealth the show to me had brought: for oft, when on my couch I lie in vacant or in pensive mood, they flash upon that inward eye which is the bliss of solitude; and then my heart with pleasure fills, and dances with the daffodils."
     }
   ]
 }

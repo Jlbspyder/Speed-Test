@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const TIME_LIMIT = 60;
-const MEDIUM_TIME_LIMIT = 90;
-const HARD_TIME_LIMIT = 120;
 const BEST_KEY = "personal_best";
 const HAS_PLAYED_KEY = "typing_has_played_v1";
 const MODE_KEY = "typing_mode_v1";
 const DIFF_KEY = "typing_difficulty_v1";
 const BEST_ACCURACY_KEY = "typing_best_accuracy_v1";
+
 
 const pickRandom = (data, difficulty) => {
   const arr = data[difficulty] ?? [];
@@ -24,6 +22,15 @@ export function useTypingTest(data) {
       ? saved
       : "easy";
   });
+  
+const timeByDifficulty = {
+    easy: 60,
+    medium: 90,
+    hard: 120,
+  };
+
+const timeLimit = timeByDifficulty[difficulty];
+
 
   const [mode, setMode] = useState(() => {
     const saved = localStorage.getItem(MODE_KEY);
@@ -39,6 +46,7 @@ export function useTypingTest(data) {
   const [status, setStatus] = useState("idle"); // "idle" | "running" | "finished"
   const [startMs, setStartMs] = useState(null);
   const [elapsed, setElapsed] = useState(0);
+
 
   const [typed, setTyped] = useState("");
   const [totalKeys, setTotalKeys] = useState(0);
@@ -125,26 +133,14 @@ export function useTypingTest(data) {
       const sec = Math.floor((Date.now() - startMs) / 1000);
       setElapsed(sec);
 
-      if (mode === "timed" && difficulty === "easy" && sec >= TIME_LIMIT) {
-        setElapsed(TIME_LIMIT);
-        setStatus("finished");
-      }
-      if (
-        mode === "timed" &&
-        difficulty === "medium" &&
-        sec >= MEDIUM_TIME_LIMIT
-      ) {
-        setElapsed(MEDIUM_TIME_LIMIT);
-        setStatus("finished");
-      }
-      if (mode === "timed" && difficulty === "hard" && sec >= HARD_TIME_LIMIT) {
-        setElapsed(HARD_TIME_LIMIT);
+      if (mode === "timed" && sec >= timeLimit) {
+        setElapsed(timeLimit);
         setStatus("finished");
       }
     }, 200);
 
     return () => clearInterval(id);
-  }, [status, startMs, mode]);
+  }, [status, startMs, mode, timeLimit]);
 
   // Finish passage mode when typed reaches passage length
   useEffect(() => {
@@ -217,16 +213,8 @@ export function useTypingTest(data) {
 
   // timed: countdown; passage: counts up (no limit)
   const timeLeft =
-    mode === "timed" && difficulty === "easy"
-      ? clamp(TIME_LIMIT - elapsed, 0, TIME_LIMIT)
-      : null;
-  const timeLeftMedium =
-    mode === "timed" && difficulty === "medium"
-      ? clamp(MEDIUM_TIME_LIMIT - elapsed, 0, MEDIUM_TIME_LIMIT)
-      : null;
-  const timeLeftHard =
-    mode === "timed" && difficulty === "hard"
-      ? clamp(HARD_TIME_LIMIT - elapsed, 0, HARD_TIME_LIMIT)
+    mode === "timed"
+      ? clamp(timeLimit - elapsed, 0, timeLimit)
       : null;
 
   const start = () => {
@@ -317,9 +305,9 @@ export function useTypingTest(data) {
     status,
     elapsed,
     timeLeft,
-    timeLeftMedium,
-    timeLeftHard,
     typed,
+    timeByDifficulty, 
+    timeLimit,
 
     // stats
     wpm,

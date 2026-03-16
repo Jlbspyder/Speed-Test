@@ -1,24 +1,27 @@
-import { useState } from "react";
-
 const Header = ({
   levelSelected,
   setLevelSelected,
-  timeSelected,
-  setTimeSelected,
   wpm,
   accuracy,
   typing,
-  timeDisplay,
-  timeDisplayMedium,
-  timeDisplayHard,
+  openLevel,
+  openTime,
+  setOpenLevel,
+  setOpenTime,
 }) => {
+  const { status, mode, setMode, timeLeft, elapsed, timeLimit } = typing;
+
   const levelOptions = ["Easy", "Medium", "Hard"];
-  const timeOptions = ["Timed", "Passage"];
+  const modeOptions = [
+    { value: "timed", label: `Timed (${timeLimit}s)` },
+    { value: "passage", label: "Passage" },
+  ];
 
-  const [openLevel, setOpenLevel] = useState(false);
-  const [openTime, setOpenTime] = useState(false);
+  const displayTime = mode === "timed" ? timeLeft : elapsed;
 
-  const { status } = typing;
+  const minutes = Math.floor(displayTime / 60);
+  const seconds = displayTime % 60;
+  const formattedTime = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
   return (
     <div>
@@ -47,9 +50,7 @@ const Header = ({
               <div
                 className={`text-2xl font-semibold ${status === "idle" ? "text-(--white)" : "text-(--yellow)"}`}
               >
-                {typing.difficulty === "easy" && timeDisplay}
-                {typing.difficulty === "medium" && timeDisplayMedium}
-                {typing.difficulty === "hard" && timeDisplayHard}
+                {formattedTime}
               </div>
             </div>
           </div>
@@ -61,7 +62,7 @@ const Header = ({
               <button
                 type="button"
                 onClick={() => setOpenLevel((prev) => !prev)}
-                className="w-full py-1 border border-(--light-gray) cursor-pointer rounded-lg text-center"
+                className="w-full py-1  border border-(--light-gray) cursor-pointer rounded-lg text-center"
               >
                 {levelSelected || "Easy"}
               </button>
@@ -97,7 +98,7 @@ const Header = ({
                         "
                         />
                       </div>
-                      <span>{option}</span>
+                      <span className="max-[395px]:text-[13px]">{option}</span>
                     </li>
                   ))}
                 </ul>
@@ -106,7 +107,7 @@ const Header = ({
               <img
                 src="/images/icon-down-arrow.svg"
                 alt="dropdown arrow"
-                className="pointer-events-none absolute right-5 sm:right-20 top-1/2 -translate-y-1/2"
+                className={`pointer-events-none absolute right-5 sm:right-20 top-1/2 -translate-y-1/2 ${openLevel ? "rotate-180 transition duration-300" : "transition duration-300"}`}
               />
             </div>
 
@@ -117,28 +118,29 @@ const Header = ({
                 onClick={() => setOpenTime((prev) => !prev)}
                 className="w-full py-1 border border-(--light-gray) cursor-pointer rounded-lg text-center"
               >
-                {typing.difficulty === "easy" && "Timed (60s)"}
-                {typing.difficulty === "medium" && "Timed (90s)"}
-                {typing.difficulty === "hard" && "Timed (120s)"}
+                {typing.mode === "timed"
+                  ? `Timed (${typing.timeLimit}s)`
+                  : "Passage"}
               </button>
 
               {openTime && (
                 <ul className="absolute w-full mt-1 rounded-sm bg-(--off-black) shadow-md z-20">
-                  {timeOptions.map((option) => (
+                  {modeOptions.map((option) => (
                     <li
-                      key={option}
-                      className="relative border-b last:border-b-0 border-(--dark-gray) flex items-center gap-2 px-4 py-2 hover:bg-(--light-blue) cursor-pointer"
+                      key={option.value}
                       onClick={() => {
-                        setTimeSelected(option);
+                        setMode(option.value);
                         setOpenTime(false);
                       }}
+                      className="relative border-b last:border-b-0 border-(--dark-gray) flex items-center gap-2 px-4 py-2 hover:bg-(--light-blue) cursor-pointer"
                     >
-                      <div className="relative">
+                      <label key={option.value} className="relative">
                         <input
                           type="radio"
-                          name="time-options"
-                          checked={timeSelected === option}
-                          onChange={() => setTimeSelected(option)}
+                          name="mode"
+                          value={option.value}
+                          checked={mode === option.value}
+                          onChange={() => setMode(option.value)}
                           className="form-checkbox relative cursor-pointer appearance-none peer checked:border-0 checked:bg-(--light-blue) bg-transparent border border-(--white) w-4 h-4 rounded-full"
                         />
                         <div
@@ -150,10 +152,12 @@ const Header = ({
                             bg-black
                             scale-0 peer-checked:scale-100
                             transition
-                        "
+                            "
                         />
-                      </div>
-                      <span>{option}</span>
+                      </label>
+                      <span className="max-[395px]:text-[13px]">
+                        {option.label}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -162,7 +166,7 @@ const Header = ({
               <img
                 src="/images/icon-down-arrow.svg"
                 alt="dropdown arrow"
-                className="pointer-events-none absolute right-4 sm:right-20 top-1/2 -translate-y-1/2"
+                className={`pointer-events-none absolute max-[395px]:right-2 right-4 sm:right-20 top-1/2 -translate-y-1/2 ${openTime ? "rotate-180 transition duration-300" : "transition duration-300"}`}
               />
             </div>
           </div>
@@ -187,17 +191,17 @@ const Header = ({
             </div>
             <div className="flex items-center gap-1 ">
               <p className="text-(--dark-gray) text-[12px]">Mode:</p>
-              {timeOptions.map((option) => (
+              {modeOptions.map((option) => (
                 <button
-                  key={option}
-                  onClick={() => setTimeSelected(option)}
+                  key={option.value}
+                  onClick={() => setMode(option.value)}
                   className={`px-3 rounded-md border ${
-                    timeSelected === option
+                    mode === option.value
                       ? "border-(--light-blue) text-(--light-blue)"
                       : "border-(--light-gray) hover:text-(--light-blue) hover:border-(--light-blue) text-(--white)"
                   } cursor-pointer`}
                 >
-                  <span className="text-[12px]">{option}</span>
+                  <span className="text-[12px]">{option.label}</span>
                 </button>
               ))}
             </div>

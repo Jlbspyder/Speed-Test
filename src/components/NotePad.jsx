@@ -1,8 +1,20 @@
 import { useMemo } from "react";
 
-const NotePad = ({ typing }) => {
-  const { passage, typed, status, onChange, start, restart, onKeyDown, inputRef } =
-    typing;
+const NotePad = ({
+  typing,
+  setOpenLevel,
+  setOpenTime,
+}) => {
+  const {
+    passage,
+    typed,
+    status,
+    onChange,
+    start,
+    restart,
+    onKeyDown,
+    inputRef,
+  } = typing;
 
   // Passage render
   const renderedPassage = useMemo(() => {
@@ -31,17 +43,19 @@ const NotePad = ({ typing }) => {
     });
   }, [passage, typed, status]);
 
-  
-
   return (
     <>
-      <div className={`mt-6 relative ${status !== "idle" ? "border-b-(--dark-gray) border" : ""}`}>
+      <div
+        className={`mt-6 relative ${status !== "idle" ? "border-b-(--dark-gray) border" : ""}`}
+      >
         {/* Typing area */}
         <div
           className="relative bg-(--black) pb-4 px-1 rounded cursor-text"
           onClick={() => {
             inputRef.current?.focus();
             if (status === "idle") start();
+            setOpenLevel(false);
+            setOpenTime(false);
           }}
         >
           {/* blurred passage when idle */}
@@ -63,6 +77,8 @@ const NotePad = ({ typing }) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   start();
+                  setOpenLevel(false);
+                  setOpenTime(false);
                 }}
                 className="bg-(--deep-blue) text-[22px] sm:text-[12px] text-(--white) rounded-lg cursor-pointer px-4 py-2 sm:rounded-md border-2 border-(--light-blue) hover:bg-(--light-blue) font-semibold"
               >

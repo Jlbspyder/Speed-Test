@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Header from "./components/Header";
 import NotePad from "./components/NotePad";
 import Complete from "./components/Complete";
@@ -10,14 +10,12 @@ import { useTypingTest } from "./hooks/useTypingTest";
 const levelToKey = (v) => v.toLowerCase();
 const timeToMode = (v) => (v.startsWith("Timed") ? "timed" : "passage");
 
-const formatTime = (sec) => {
-  const mins = Math.floor(sec / 60);
-  const seconds = String(sec % 60).padStart(2, "0");
-  return `${mins}:${seconds}`;
-};
-
 function App() {
   const typing = useTypingTest(data);
+
+  const minutes = Math.floor(typing.displayTime / 60);
+  const seconds = typing.displayTime % 60;
+  const formattedTime = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
   const [levelSelected, setLevelSelected] = useState(
     () => typing.difficulty[0].toUpperCase() + typing.difficulty.slice(1),
@@ -27,24 +25,15 @@ function App() {
     typing.mode === "timed" ? "Timed (60s)" : "Passage",
   );
 
+  const [openLevel, setOpenLevel] = useState(false);
+  const [openTime, setOpenTime] = useState(false);
+
+
   useEffect(
     () => typing.setDifficulty(levelToKey(levelSelected)),
     [levelSelected],
   );
   useEffect(() => typing.setMode(timeToMode(timeSelected)), [timeSelected]);
-
-  const timeDisplay =
-    typing.mode === "timed" && typing.difficulty === "easy"
-      ? formatTime(typing.timeLeft ?? 0)
-      : formatTime(typing.elapsed);
-  const timeDisplayMedium =
-    typing.mode === "timed" && typing.difficulty === "medium"
-      ? formatTime(typing.timeLeftMedium ?? 0)
-      : formatTime(typing.elapsed);
-  const timeDisplayHard =
-    typing.mode === "timed" && typing.difficulty === "hard"
-      ? formatTime(typing.timeLeftHard ?? 0)
-      : formatTime(typing.elapsed);
 
   return (
     <div className="container min-h-screen">
@@ -56,15 +45,23 @@ function App() {
           timeSelected={timeSelected}
           setTimeSelected={setTimeSelected}
           wpm={typing.wpm}
+          openLevel={openLevel}
+          openTime={openTime}
+          setOpenLevel={setOpenLevel}
+          setOpenTime={setOpenTime}
           accuracy={typing.accuracy}
-          timeDisplay={timeDisplay}
-          timeDisplayMedium={timeDisplayMedium}
-          timeDisplayHard={timeDisplayHard}
+          timeDisplay={formattedTime}
           personalBest={typing.best}
           typing={typing}
         />
       )}
-      {typing.status !== "finished" && <NotePad typing={typing} />}
+      {typing.status !== "finished" && (
+        <NotePad
+          typing={typing}
+          setOpenLevel={setOpenLevel}
+          setOpenTime={setOpenTime}
+        />
+      )}
       {typing.status === "finished" && <Complete typing={typing} />}
       {typing.status === "finished" && (
         <BaseLine
