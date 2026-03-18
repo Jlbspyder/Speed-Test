@@ -1,10 +1,6 @@
 import { useMemo } from "react";
 
-const NotePad = ({
-  typing,
-  setOpenLevel,
-  setOpenTime,
-}) => {
+const NotePad = ({ typing, setOpenLevel, setOpenTime }) => {
   const {
     passage,
     typed,
@@ -22,21 +18,21 @@ const NotePad = ({
     const cursor = typed.length;
 
     return characters.map((character, idx) => {
-      let cls = status === "idle" ? "text-gray-300" : "text-(--light-gray)";
+      let text = status === "idle" ? "text-gray-300" : "text-(--light-gray)";
 
       if (idx < cursor) {
-        cls =
+        text =
           typed[idx] === character
             ? "text-(--green)"
             : "text-(--red) underline";
       } else if (status === "running" && idx === cursor) {
-        cls = "text-(--dark-gray) border-l-2 border-(--white) animate-blink";
+        text = "bg-(--off-black) text-(--dark-gray)";
       }
 
       const display = character === " " ? "\u00A0" : character;
 
       return (
-        <span key={idx} className={cls}>
+        <span key={idx} className={text}>
           {display}
         </span>
       );
@@ -63,7 +59,7 @@ const NotePad = ({
             className={[
               "leading-7 text-lg sm:text-xl whitespace-pre-wrap wrap-break-words break-all transition duration-200",
               status === "idle"
-                ? "blur-md brightness-95 select-none"
+                ? "blur-sm brightness-95 select-none"
                 : "blur-0 brightness-100",
             ].join(" ")}
           >
@@ -80,7 +76,7 @@ const NotePad = ({
                   setOpenLevel(false);
                   setOpenTime(false);
                 }}
-                className="bg-(--deep-blue) text-[22px] sm:text-[12px] text-(--white) rounded-lg cursor-pointer px-4 py-2 sm:rounded-md border-2 border-(--light-blue) hover:bg-(--light-blue) font-semibold"
+                className="bg-(--deep-blue) text-[22px] sm:text-[12px] text-(--white) rounded-lg cursor-pointer px-4 py-3 sm:py-2 hover:bg-(--light-blue) font-semibold"
               >
                 Start Typing Test
               </button>
@@ -107,10 +103,10 @@ const NotePad = ({
       </div>
       {/* Controls */}
       {status !== "idle" && (
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div className="mt-4 pb-8 sm:pb-0 flex items-center justify-center gap-3">
           <button
             onClick={() => {
-              restart()
+              restart();
               setOpenLevel(false);
               setOpenTime(false);
             }}
@@ -120,7 +116,7 @@ const NotePad = ({
             <img
               src="/images/icon-restart.svg"
               alt="Restart"
-              className="ml-2 md:w-2 md:h-2"
+              className="ml-2 sm:w-3"
             />
           </button>
         </div>
