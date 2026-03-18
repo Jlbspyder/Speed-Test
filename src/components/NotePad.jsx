@@ -103,7 +103,7 @@ const NotePad = ({ typing, setOpenLevel, setOpenTime }) => {
       </div>
       {/* Controls */}
       {status !== "idle" && (
-        <div className="mt-4 pb-8 sm:pb-0 flex items-center justify-center gap-3">
+        <div className="mt-4 pb-8 md:pb-0 flex items-center justify-center gap-3">
           <button
             onClick={() => {
               restart();
