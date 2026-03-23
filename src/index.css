@@ -37,6 +37,11 @@ header {
   font-size: 15px;
   cursor: pointer;
 }
+.error {
+  font-size: 65px;
+  color: var(--red);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 20px;

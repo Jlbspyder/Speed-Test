@@ -6,7 +6,6 @@ const MODE_KEY = "typing_mode_v1";
 const DIFF_KEY = "typing_difficulty_v1";
 const BEST_ACCURACY_KEY = "typing_best_accuracy_v1";
 
-
 const pickRandom = (data, difficulty) => {
   const arr = data[difficulty] ?? [];
   if (!arr.length) return "";
@@ -22,31 +21,29 @@ export function useTypingTest(data) {
       ? saved
       : "easy";
   });
-  
-const timeByDifficulty = {
+
+  const timeByDifficulty = {
     easy: 60,
     medium: 90,
     hard: 120,
   };
 
-const timeLimit = timeByDifficulty[difficulty];
-
+  const timeLimit = timeByDifficulty[difficulty];
 
   const [mode, setMode] = useState(() => {
     const saved = localStorage.getItem(MODE_KEY);
     return saved === "timed" || saved === "passage" ? saved : "timed";
   });
 
-  const [resultType, setResultType] = useState(null); // "baseline" | "highscore" | null
+  const [resultType, setResultType] = useState(null); // "baseline" | "highscore" | "timeUP" | null
   const [hasPlayed, setHasPlayed] = useState(() => {
     return localStorage.getItem(HAS_PLAYED_KEY) === "true";
   });
 
   const [passage, setPassage] = useState(() => pickRandom(data, "easy"));
-  const [status, setStatus] = useState("idle"); // "idle" | "running" | "finished"
+  const [status, setStatus] = useState("idle"); // "idle" | "running" | "finished" | "timeout"
   const [startMs, setStartMs] = useState(null);
   const [elapsed, setElapsed] = useState(0);
-
 
   const [typed, setTyped] = useState("");
   const [totalKeys, setTotalKeys] = useState(0);
@@ -84,6 +81,9 @@ const timeLimit = timeByDifficulty[difficulty];
   const restart = () => {
     clearRunState();
     if (status === "finished") {
+      reset(difficulty); // picks new random passage
+    }
+    if (status === "timeup") {
       reset(difficulty); // picks new random passage
     }
     requestAnimationFrame(() => {
@@ -135,18 +135,24 @@ const timeLimit = timeByDifficulty[difficulty];
 
       if (mode === "timed" && sec >= timeLimit) {
         setElapsed(timeLimit);
-        setStatus("finished");
+        setStatus("timeout");
       }
     }, 200);
 
     return () => clearInterval(id);
   }, [status, startMs, mode, timeLimit]);
 
+  // When timer runs out before passage ends
+  useEffect(() => {
+    if (status !== "timeout") return;
+    setResultType("timeUP");
+  }, [status]);
+
   // Finish passage mode when typed reaches passage length
   useEffect(() => {
     if (status !== "running") return;
     if (passage.length === 0) return;
-    if (typed.length >= passage.length) {
+    if (typed.length === passage.length) {
       setStatus("finished");
     }
   }, [typed, passage, status]);
@@ -213,9 +219,7 @@ const timeLimit = timeByDifficulty[difficulty];
 
   // timed: countdown; passage: counts up (no limit)
   const timeLeft =
-    mode === "timed"
-      ? clamp(timeLimit - elapsed, 0, timeLimit)
-      : null;
+    mode === "timed" ? clamp(timeLimit - elapsed, 0, timeLimit) : null;
 
   const start = () => {
     if (!passage) return;
@@ -249,7 +253,20 @@ const timeLimit = timeByDifficulty[difficulty];
       localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
       setBestAccuracy(accuracy);
 
-      setResultType("baseline"); // first screen
+      setResultType("baseline"); // second screen (beat baseline)
+      return;
+    }
+    if (!hasPlayed && timeLeft === 0) {
+      localStorage.setItem(HAS_PLAYED_KEY, "true");
+      setHasPlayed(true);
+
+      localStorage.setItem(BEST_KEY, String(wpm));
+      setBest(wpm);
+
+      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
+      setBestAccuracy(accuracy);
+
+      setResultType("timeUP"); // second screen (beat baseline)
       return;
     }
 
@@ -271,7 +288,6 @@ const timeLimit = timeByDifficulty[difficulty];
         setBestAccuracy(accuracy);
         return;
       }
-
       setResultType("highscore"); // second screen (beat baseline)
       return;
     }
@@ -306,7 +322,7 @@ const timeLimit = timeByDifficulty[difficulty];
     elapsed,
     timeLeft,
     typed,
-    timeByDifficulty, 
+    timeByDifficulty,
     timeLimit,
 
     // stats

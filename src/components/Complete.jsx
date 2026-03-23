@@ -1,4 +1,5 @@
 import { IoMdRefresh } from "react-icons/io";
+import { VscError } from "react-icons/vsc";
 const Complete = ({ typing }) => {
   const {
     wpm,
@@ -24,18 +25,21 @@ const Complete = ({ typing }) => {
         alt="star"
         className="star-1 w-6 h-6 absolute top-10 left-0"
       />
-      <img
+      {(resultType === "complete" || resultType === "baseline" || resultType === "highscore") && <img
         src={
-          resultType !== "highscore"
-            ? "/images/icon-completed.svg"
-            : "/images/icon-new-pb.svg"
+          resultType === "highscore"
+            ? "/images/icon-new-pb.svg"
+            : "/images/icon-completed.svg"
         }
         alt="pb"
         className="mb-8 md:mb-4"
-      />
+      />}
+      {resultType === "timeUP" && <VscError className="error" />}
       <h2 className="text-3xl font-semibold py-2">
         {resultType === "complete"
           ? "Test Complete!"
+          : resultType === "timeUP"
+          ? "Your Time Has Run Out!"
           : resultType === "baseline"
             ? "Baseline Established!"
             : resultType === "highscore"
@@ -45,6 +49,8 @@ const Complete = ({ typing }) => {
       <p className="text-(--dark-gray) text-[18px] w-full">
         {resultType === "complete"
           ? "Solid run. Keep pushing to beat your high score."
+          : resultType === "timeUP"
+          ? "You need to up your speed so your time doesn't run out."
           : resultType === "baseline"
             ? "You've set the bar. Now the real challenge begins-time to beat it."
             : resultType === "highscore"
