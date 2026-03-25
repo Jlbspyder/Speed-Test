@@ -51,11 +51,11 @@ const Complete = ({ typing }) => {
         {resultType === "complete"
           ? "Solid run. Keep pushing to beat your high score."
           : resultType === "timeUP" && upAccuracy && upSpeed
-          ? "You need to up your speed so your time doesn't run out, although your speed and accuracy improved."
+          ? "Your speed and accuracy improved, but you need to type faster to beat the clock!"
            : resultType === "timeUP" && upSpeed
-          ? "You need to up your speed so your time doesn't run out, although your WPM increased."
+          ? "Your WPM increased, but you ran out of time!."
           : resultType === "timeUP" && upAccuracy
-          ? "You need to up your speed so your time doesn't run out, although your accuracy improved."
+          ? "Your time is up! Good thing is you typed with better accuracy."
           : resultType === "timeUP"
           ? "You need to up your speed so your time doesn't run out."
           : resultType === "baseline"
