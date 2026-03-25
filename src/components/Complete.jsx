@@ -8,6 +8,8 @@ const Complete = ({ typing }) => {
     incorrectChars,
     restart,
     best,
+    upSpeed,
+    upAccuracy,
     resultType,
     elapsed,
   } = typing;
@@ -17,7 +19,6 @@ const Complete = ({ typing }) => {
     const seconds = String(time % 60).padStart(2, "0");
     return `${mins}:${seconds}`;
   };
-
   return (
     <div className="relative flex flex-col items-center justify-center text-(--white) text-center md:mt-5 mt-15">
       <img
@@ -49,6 +50,12 @@ const Complete = ({ typing }) => {
       <p className="text-(--dark-gray) text-[18px] w-full">
         {resultType === "complete"
           ? "Solid run. Keep pushing to beat your high score."
+          : resultType === "timeUP" && upAccuracy && upSpeed
+          ? "You need to up your speed so your time doesn't run out, although your speed and accuracy improved."
+           : resultType === "timeUP" && upSpeed
+          ? "You need to up your speed so your time doesn't run out, although your WPM increased."
+          : resultType === "timeUP" && upAccuracy
+          ? "You need to up your speed so your time doesn't run out, although your accuracy improved."
           : resultType === "timeUP"
           ? "You need to up your speed so your time doesn't run out."
           : resultType === "baseline"

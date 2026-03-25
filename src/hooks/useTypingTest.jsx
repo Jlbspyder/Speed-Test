@@ -48,6 +48,8 @@ export function useTypingTest(data) {
   const [typed, setTyped] = useState("");
   const [totalKeys, setTotalKeys] = useState(0);
   const [errorKeys, setErrorKeys] = useState(0);
+  const [upSpeed, setUpSpeed] = useState(false);
+  const [upAccuracy, setUpAccuracy] = useState(false);
 
   const [best, setBest] = useState(() => {
     const score = localStorage.getItem(BEST_KEY);
@@ -83,7 +85,7 @@ export function useTypingTest(data) {
     if (status === "finished") {
       reset(difficulty); // picks new random passage
     }
-    if (status === "timeup") {
+    if (status === "timeout") {
       reset(difficulty); // picks new random passage
     }
     requestAnimationFrame(() => {
@@ -92,6 +94,8 @@ export function useTypingTest(data) {
       setStartMs(Date.now());
       setElapsed(0);
     });
+    setUpAccuracy(false);
+    setUpSpeed(false);
   };
 
   const reset = (newDifficulty = difficulty) => {
@@ -142,12 +146,6 @@ export function useTypingTest(data) {
     return () => clearInterval(id);
   }, [status, startMs, mode, timeLimit]);
 
-  // When timer runs out before passage ends
-  useEffect(() => {
-    if (status !== "timeout") return;
-    setResultType("timeUP");
-  }, [status]);
-
   // Finish passage mode when typed reaches passage length
   useEffect(() => {
     if (status !== "running") return;
@@ -182,6 +180,43 @@ export function useTypingTest(data) {
     const acc = 1 - errorKeys / totalKeys;
     return Math.round(clamp(acc, 0, 1) * 100);
   }, [totalKeys, errorKeys]);
+
+  // When timer runs out before passage ends
+  useEffect(() => {
+    if (status !== "timeout") return;
+
+    if (!hasPlayed) {
+      localStorage.setItem(HAS_PLAYED_KEY, "true");
+      setHasPlayed(true);
+
+      localStorage.setItem(BEST_KEY, String(wpm));
+      setBest(wpm);
+
+      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
+      setBestAccuracy(accuracy);
+
+      setResultType("timeUP");
+      return;
+    }
+    let hasImproved = false;
+
+    if (wpm > best) {
+      localStorage.setItem(BEST_KEY, String(wpm));
+      setBest(wpm);
+      setUpSpeed(true);
+      hasImproved = true;
+    }
+    if (accuracy > bestAccuracy) {
+      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
+      setBestAccuracy(accuracy);
+      setUpAccuracy(true);
+      hasImproved = true;
+    }
+    if (hasImproved) {
+      setResultType("timeUP");
+    }
+    setResultType("timeUP");
+  }, [status, accuracy, wpm, best, bestAccuracy, hasPlayed]);
 
   const onChange = (e) => {
     const nextValue = e.target.value;
@@ -240,74 +275,37 @@ export function useTypingTest(data) {
   useEffect(() => {
     if (status !== "finished") return;
 
-    const prevBest = best;
+    const alreadyPlayed = localStorage.getItem(HAS_PLAYED_KEY) === "true";
+    const savedBest = Number(localStorage.getItem(BEST_KEY));
+    const savedBestAccuracy = Number(localStorage.getItem(BEST_ACCURACY_KEY));
 
-    // FIRST EVER TEST (baseline moment)
-    if (!hasPlayed) {
+    if (!alreadyPlayed) {
       localStorage.setItem(HAS_PLAYED_KEY, "true");
+      localStorage.setItem(BEST_KEY, String(wpm));
+      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
+
       setHasPlayed(true);
-
-      localStorage.setItem(BEST_KEY, String(wpm));
       setBest(wpm);
-
-      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
       setBestAccuracy(accuracy);
-
-      setResultType("baseline"); // second screen (beat baseline)
-      return;
-    }
-    if (!hasPlayed && timeLeft === 0) {
-      localStorage.setItem(HAS_PLAYED_KEY, "true");
-      setHasPlayed(true);
-
-      localStorage.setItem(BEST_KEY, String(wpm));
-      setBest(wpm);
-
-      localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
-      setBestAccuracy(accuracy);
-
-      setResultType("timeUP"); // second screen (beat baseline)
+      setResultType("baseline");
       return;
     }
 
-    // SECOND TEST (beat baseline moment)
-    if (
-      hasPlayed &&
-      prevBest != null &&
-      resultType != null &&
-      accuracy != null
-    ) {
-      if (wpm > prevBest) {
-        setResultType("highscore");
-        localStorage.setItem(BEST_KEY, String(wpm));
-        setBest(wpm);
-        return;
-      }
-      if (accuracy > bestAccuracy) {
-        localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
-        setBestAccuracy(accuracy);
-        return;
-      }
-      setResultType("highscore"); // second screen (beat baseline)
-      return;
-    }
+    let newResult = "complete";
 
-    // Later tests
-    if (wpm <= prevBest) {
-      setResultType("complete");
-      localStorage.setItem(BEST_KEY, String(wpm));
-      setBest(prevBest);
-    }
-    if (wpm > prevBest) {
-      setResultType("highscore");
+    if (wpm > savedBest) {
       localStorage.setItem(BEST_KEY, String(wpm));
       setBest(wpm);
+      newResult = "highscore";
     }
-    if (accuracy > bestAccuracy) {
+
+    if (accuracy > savedBestAccuracy) {
       localStorage.setItem(BEST_ACCURACY_KEY, String(accuracy));
       setBestAccuracy(accuracy);
     }
-  }, [status]);
+
+    setResultType(newResult);
+  }, [status, wpm, accuracy]);
 
   return {
     // config
@@ -329,6 +327,8 @@ export function useTypingTest(data) {
     wpm,
     accuracy,
     best,
+    upSpeed,
+    upAccuracy,
     bestAccuracy,
     correctChars,
     incorrectChars,
